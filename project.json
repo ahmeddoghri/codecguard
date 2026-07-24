@@ -1,0 +1,9 @@
+{
+  "name": "codecguard",
+  "tagline": "A CI quality gate for audio codec changes",
+  "headline": "The file got smaller. Did the music survive?",
+  "summary": "Run real codec round trips and block releases that damage spectrum, transients, stereo width, or SNR.",
+  "accent": "#f0c86e",
+  "topics": "audio-codec,audio-quality,ffmpeg,dsp,continuous-integration,music-information-retrieval",
+  "sources": []
+}

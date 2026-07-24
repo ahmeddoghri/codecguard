@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codecguard"
+version = "0.1.0"
+description = "Audio-video offset and drift repair tool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Ahmed Doghri"}]
+dependencies = ["numpy>=2.0"]
+
+[project.scripts]
+codecguard = "codecguard.cli:main"
+
+[tool.setuptools]
+packages = ["codecguard"]
+
+[tool.setuptools.package-data]
+codecguard = ["web/*.html"]

@@ -1,0 +1,5 @@
+services:
+  codecguard:
+    build: .
+    ports:
+      - "8090:8090"
