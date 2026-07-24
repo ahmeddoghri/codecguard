@@ -4,6 +4,8 @@
 
 Generate a reference master, execute a real FFmpeg encode/decode, and fail a release when the codec damages spectrum, transients, stereo width, or signal-to-noise ratio.
 
+![codecguard cover](demo/cover.png)
+
 ![codecguard workbench](demo/dashboard.png)
 
 ## What ships
