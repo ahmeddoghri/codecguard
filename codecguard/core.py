@@ -65,8 +65,14 @@ def measure(reference, candidate, thresholds: dict | None = None) -> dict:
     error = reference - candidate
     snr = 10 * np.log10((np.mean(reference ** 2) + 1e-12) / (np.mean(error ** 2) + 1e-12))
     convergences = []
-    for size in (512, 2048, 8192):
-        hop = size // 2; frame_count = max(1, (count - size) // hop + 1)
+    # frame_count was floored to a minimum of 1 even when `count < size`,
+    # so a clip shorter than the FFT window (e.g. under 8192 samples, ~170ms
+    # at 48kHz -- an ordinary length for short SFX or dialogue clips) made
+    # `indices` reach past the signal's actual length, raising an uncaught
+    # IndexError on the fancy-indexed reference[indices]/candidate[indices].
+    sizes = [size for size in (512, 2048, 8192) if size <= count] or [count]
+    for size in sizes:
+        hop = max(1, size // 2); frame_count = max(1, (count - size) // hop + 1)
         indices = np.arange(size)[None, :] + hop * np.arange(frame_count)[:, None]
         window = np.hanning(size)[None, :, None]
         ref_spec = np.abs(np.fft.rfft(reference[indices] * window, axis=1))
