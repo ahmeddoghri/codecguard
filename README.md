@@ -13,7 +13,7 @@ Generate a reference master, execute a real FFmpeg encode/decode, and fail a rel
 - Deterministic stereo master with tones, chirps, wide content, and hard transients
 - Real AAC/MP3/Opus round trips through FFmpeg
 - Multi-resolution spectral convergence, SNR, transient-retention, and stereo-width gates
-- CLI, JSON API, interactive regression console, Docker, tests, and CI
+- CLI, JSON API, interactive regression console, Docker, tests
 
 ## Run it end to end
 
