@@ -1,5 +1,7 @@
 # codecguard
 
+[![tests](https://github.com/ahmeddoghri/codecguard/actions/workflows/tests.yml/badge.svg)](https://github.com/ahmeddoghri/codecguard/actions/workflows/tests.yml) [![case study](https://img.shields.io/badge/case%20study-adoghri.com-e0703e)](https://adoghri.com/project-63.html)
+
 **A CI quality gate for audio codec changes.**
 
 Generate a reference master, execute a real FFmpeg encode/decode, and fail a release when the codec damages spectrum, transients, stereo width, or signal-to-noise ratio.
