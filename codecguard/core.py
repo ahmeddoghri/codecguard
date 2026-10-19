@@ -98,11 +98,37 @@ def demo() -> dict:
     return {"release_candidate": measure(reference, good), "regression": measure(reference, bad)}
 
 
+# An encoder name is not a container name. Deriving the output extension
+# from the codec worked for "aac" by luck and was special-cased for
+# libmp3lame; everything else, libopus and libvorbis included, produced a
+# filename ffmpeg could not choose a muxer for and failed the encode.
+CONTAINER_FOR_CODEC = {
+    "aac": "m4a", "libfdk_aac": "m4a", "alac": "m4a",
+    "libmp3lame": "mp3", "mp3": "mp3",
+    "libopus": "opus", "opus": "opus",
+    "libvorbis": "ogg", "vorbis": "ogg",
+    "flac": "flac",
+    "ac3": "ac3", "eac3": "eac3",
+    "pcm_s16le": "wav", "pcm_s24le": "wav",
+}
+
+
+def container_for(codec: str) -> str:
+    """Container extension ffmpeg can mux this codec into."""
+    try:
+        return CONTAINER_FOR_CODEC[codec]
+    except KeyError:
+        raise ValueError(
+            f"unknown codec {codec!r}: add it to CONTAINER_FOR_CODEC with the "
+            "container extension ffmpeg should mux it into"
+        ) from None
+
+
 def benchmark(directory: str | Path, codec: str = "aac", bitrate: str = "192k") -> dict:
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg: raise RuntimeError("ffmpeg is required")
     directory = Path(directory); directory.mkdir(parents=True, exist_ok=True)
-    reference_path, encoded_path, decoded_path = directory / "reference.wav", directory / f"candidate.{codec if codec != 'libmp3lame' else 'mp3'}", directory / "decoded.wav"
+    reference_path, encoded_path, decoded_path = directory / "reference.wav", directory / f"candidate.{container_for(codec)}", directory / "decoded.wav"
     _write(reference_path, fixture())
     subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(reference_path), "-c:a", codec, "-b:a", bitrate, str(encoded_path)], check=True)
     subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(encoded_path), "-ac", "2", "-ar", "48000", str(decoded_path)], check=True)

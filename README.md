@@ -56,6 +56,36 @@ covers the crash range plus a demo-output regression check; the published
 demo result (release candidate passes, regression fails on all four
 gates) is unaffected.
 
+## On codecs people actually ship
+
+The demo compares a clean build against a deliberately degraded one. These
+are real FFmpeg encodes of the same master, decoded and measured:
+
+| codec | bitrate | SNR | spectral conv. | transients | verdict |
+| --- | ---: | ---: | ---: | ---: | --- |
+| flac | lossless | 108.9 dB | 0.000 | 1.000 | **pass** |
+| aac | 192k | 34.3 dB | 0.015 | 0.947 | **pass** |
+| libvorbis | 128k | 34.2 dB | 0.016 | 0.929 | **pass** |
+| libopus | 96k | 29.4 dB | 0.029 | 0.949 | **pass** |
+| libmp3lame | 128k | 25.9 dB | 0.051 | 0.861 | **pass** |
+| aac | 64k | 10.5 dB | 0.255 | 0.767 | fail: snr, spectrum, transients |
+| libmp3lame | 32k | 12.1 dB | 0.236 | 0.325 | fail: snr, spectrum, transients |
+| libopus | 24k | -2.9 dB | 1.194 | 0.627 | fail: all four |
+
+FLAC round-tripping at 108.9 dB with exactly zero spectral error is the
+sanity check: a lossless path has to look lossless, or the metrics are
+measuring the wrong thing.
+
+### It could not encode Opus at all
+
+The output filename took its extension from the codec name, with a single
+special case for `libmp3lame`. That happened to work for `aac` and produced
+`candidate.libopus` for Opus, which ffmpeg cannot choose a muxer for, so the
+encode failed outright. The same was true of `libvorbis` and every other
+encoder whose name is not its container. Codec-to-container is now an
+explicit table, and an unknown codec raises an error that says to add it
+rather than building a filename nothing can write.
+
 ## Test
 
 ```bash
